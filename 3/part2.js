@@ -9,6 +9,7 @@ const testData = rawTestData.split("\n");
 const regex = /\#(\d+) \@ (\d+)\,(\d+)\: (\d+)\x(\d+)/;
 
 var claims = GetClaims(data);
+
 var points = [];
 claims.forEach(c => {
     for (i = c.x; i < c.x + c.width; i++) {
@@ -18,8 +19,29 @@ claims.forEach(c => {
     }
 });
 
-var result = Object.values(points).filter(point => point > 1).length;
-console.log(result);
+var result = Object.values(points);
+
+var valid = [];
+var invalid = [];
+
+claims.forEach(c => {
+    for (i = c.x; i < c.x + c.width; i++) {
+        for (j = c.y; j < c.y + c.height; j++) {
+            let count = points[`${i}x${j}`];
+            if (count > 1) {
+                invalid.push(c.id);
+            } else {
+                valid.push(c.id);
+            }
+        }
+    }
+});
+
+var onlyvalidid = valid.filter(function(x) {
+    return invalid.indexOf(x) < 0;
+})
+
+console.log(onlyvalidid[0]);
 
 function GetClaims(input) {
     return input.map(line => {
@@ -35,4 +57,5 @@ function GetClaims(input) {
     });
 }
 
-//returns 116489
+//returns an array of length 384 - with every value equalling 1260
+//n.b. this doesn't perform a check that there is only one, it just assumes there will be and finds it.
